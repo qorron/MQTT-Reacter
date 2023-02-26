@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Net::MQTT::Reacter::Roles::MappingRole;
+package Net::MQTT::Reacter::Roles::Mapping;
 
 use 5.024;
 use strict;
@@ -10,6 +10,8 @@ use Data::Dumper;
 
 use Log::Any qw($log);
 use Moose::Role;
+
+use Net::MQTT::Reacter::Reaction;
 
 use namespace::autoclean;
 
@@ -34,15 +36,17 @@ has 'topic_mapping',
     },
     ;
 
-sub map_topic {
-    my ( $self, $topic, $message ) = @_;
+
+sub react {
+	my ( $self, $topic, $message ) = @_;
     my $extracted_message = $self->extract_message($message);
     if ($extracted_message) {
         if ( $self->can_map_state($extracted_message) ) {
             my $return_message = $self->map_state($extracted_message);
             if ( $self->can_map_topic($topic) ) {
-                my @return_pairs = map { [ $_ => $return_message ] }
-                    $self->map_topic($topic)->@*;
+				my @return_pairs = map { Net::MQTT::Reacter::Reaction->new( topic => $_, data => $return_message ) }
+					$self->map_topic($topic)->@*;
+				$log->infof('res: %s', scalar(@return_pairs));
                 return \@return_pairs;
             }
             else {
@@ -59,10 +63,10 @@ sub map_topic {
     return;
 }
 
-sub extract_message {
-    my ($self, $message) = @_;
-    return $message;
-}
+# sub extract_message {
+#     my ($self, $message) = @_;
+#     return $message;
+# }
 
 
 

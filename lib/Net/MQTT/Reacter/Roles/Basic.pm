@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Net::MQTT::Reacter::Roles::ReactionRole;
+package Net::MQTT::Reacter::Roles::Basic;
 
 use 5.024;
 use strict;
@@ -8,20 +8,16 @@ use warnings;
 use Data::Dumper;
 
 use Log::Any qw($log);
-use JSON;
 use Moose::Role;
 
 use namespace::autoclean;
 
-has 'j',
-    is      => 'ro',
-    isa     => 'JSON',
-#default => sub { JSON->new->canonical->pretty->utf8 },
-    lazy    => 1,
-    builder => '_build_j',
-    ;
+# This is the base role for every reacetion
+# It provides these features:
+# - eval'd execution of your code so errors do not crash the service.
 
-has 'topic',
+
+has 'subscribe_topic',
     is      => 'ro',
     isa     => 'ArrayRef[Str]',
     default => sub { ['#'] },
@@ -34,28 +30,17 @@ has 'topic',
 #     builder => '_build_payload',
 #     ;
 
-requires 'payload';
+requires 'react';
 
-sub _build_j {
-    my $self = shift;
-    my $j;
-    if ( $ENV{HARNESS_ACTIVE} || 1 ) {
-        $j = JSON->new->pretty->canonical;
-    }
-    else {
-        $j = JSON->new;
-    }
-    return $j;
-}
 
-sub react {
+sub react_in_a_safe_way {
     my ($self, $topic, $message ) = @_;
     my @return;
     eval {
-        @return = $self->payload($topic, $message );
+        @return = $self->react($topic, $message );
     };  
     if ($@ )  {
-        warn "failed topic: $topic\nmsg: >>$message<<\n\n$@";
+		$log->errorf( 'failed topic: %s\nmsg: >>%s<<\nError: %s', $topic, $message, $@ );
     }
     return @return;
 }   

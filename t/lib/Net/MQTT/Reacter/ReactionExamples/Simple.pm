@@ -12,16 +12,16 @@ use Moose;
 
 use namespace::autoclean;
 
-with 'Net::MQTT::Reacter::Roles::ReactionRole';
+with 'Net::MQTT::Reacter::Roles::Basic';
 
 
-has '+topic',
+has '+subscribe_topic',
     default => sub { ['example/simple/#'] },
     ;
 
-sub payload {
-    my ( $self, $topic, $message ) = @_;
-    return [[ 'example/reaction', uc $message ]];
+sub react {
+	my ( $self, $topic, $message ) = @_;
+	return [Net::MQTT::Reacter::Reaction->new( topic => 'example/reaction', message => uc $message )];
 }
 
 

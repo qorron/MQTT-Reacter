@@ -12,17 +12,17 @@ use Moose;
 
 use namespace::autoclean;
 
-with 'Net::MQTT::Reacter::Roles::ReactionRole', 'Net::MQTT::Reacter::Roles::SwitchRole';
+with 'Net::MQTT::Reacter::Roles::Basic', 'Net::MQTT::Reacter::Roles::Mapping', 'Net::MQTT::Reacter::Roles::Json';
 
 
-has '+topic',
+has '+subscribe_topic',
     default => sub { ['example/switch/#'] },
     ;
 
 has '+state_mapping', default => sub {
     return {
         on  => 'ON',
-        off => 'OFF'
+        off => 'OFF',
     };
     },
     ;
