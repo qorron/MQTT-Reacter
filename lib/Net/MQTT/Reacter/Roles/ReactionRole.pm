@@ -60,5 +60,12 @@ sub react {
     return @return;
 }   
 
+
+
+sub extract_message {
+    my ($self, $message) = @_;
+    return $message;
+}
+
 42;
 
