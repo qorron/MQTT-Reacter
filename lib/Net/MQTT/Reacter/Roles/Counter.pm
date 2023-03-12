@@ -14,6 +14,12 @@ use Moose::Role;
 use namespace::autoclean;
 
 
+has 'resend_on_no_change',
+	is      => 'rw',
+	isa     => 'Bool',
+	default => 0,
+	;
+
 has 'single_action_mapping',
 	is  => 'ro',
 	isa => 'HashRef[Str]',
@@ -98,9 +104,16 @@ sub increase {
 		my $index = $self->get_counter($counter);
 		$index++;
 		my $reactions;
-		return [] unless $reactions = $self->_get_reactions_by_index( $counter, $index );
-		$self->_set_counter( $counter, $index );
-		return $reactions;
+		if ( $reactions = $self->_get_reactions_by_index( $counter, $index ) ) {
+			$self->_set_counter( $counter, $index );
+			return $reactions;
+		}
+		elsif ( $self->resend_on_no_change ) {
+			return $self->get_reactions($counter);
+		}
+		else {
+			return [];
+		}
 	}
 	else {
 		# unknown counter
@@ -113,10 +126,16 @@ sub decrease {
 	$counter //= $self->_default_counter;
 	if ( $self->has_counter($counter) ) {
 		my $index = $self->get_counter($counter);
-		return [] if $index <= 0;
-		$index--;
-		$self->_set_counter( $counter, $index );
-		return $self->_get_reactions_by_index( $counter, $index );
+		if ( $index <= 0 ) {
+			if ( !$self->resend_on_no_change ) {
+				return [];
+			}
+		}
+		else {
+			$index--;
+			$self->_set_counter( $counter, $index );
+		}
+		return $self->get_reactions($counter);
 	}
 	else {
 		# unknown counter

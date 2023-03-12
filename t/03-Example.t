@@ -68,9 +68,13 @@ is_deeply(
 	],
 	'Example Step Dimmer Switch Reaction full'
 );
+$r->reactions->[1]->resend_on_no_change(1);
 is_deeply(
 	$r->reactions->[1]->react( 'example/step_dimmer_switch', '{"action":"more"}' ),
-	[ 	],
+	[   Net::MQTT::Reacter::Reaction->new( topic => 'room/lamp1/power', data    => { power => 1 } ),
+		Net::MQTT::Reacter::Reaction->new( topic => 'room/lamp2/power', data    => ['ON', 'ON'] ),
+		Net::MQTT::Reacter::Reaction->new( topic => 'room/lamp3/power', message => 'on' ),
+	],
 	'Example Step Dimmer Switch Reaction beyond max'
 );
 is_deeply(
