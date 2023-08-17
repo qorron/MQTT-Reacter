@@ -230,46 +230,13 @@ sub react {
 	my ($self, $topic, $message) = @_;
     my ($extracted_action, $extracted_counter ) = $self->extract_message($message);
 	$extracted_counter //= $self->_default_counter;
-	my $mapped_action = $self->get_action_mapping($extracted_counter)->{$extracted_action};
-	return $self->$mapped_action($extracted_counter) if $self->can($mapped_action);
-	warn "can't $extracted_action";
+	if ($extracted_action) {
+		my $mapped_action = $self->get_action_mapping($extracted_counter)->{$extracted_action};
+		return $self->$mapped_action($extracted_counter) if $mapped_action && $self->can($mapped_action);
+		warn "can't $extracted_action";
+	}
 	return;
 }
-
-# sub map_counter {
-#     my ( $self, $topic ) = @_;
-#     my $extracted_message = $self->extract_message($message);
-#     if ($extracted_message) {
-#         if ( $self->can_map_state($extracted_message) ) {
-#             my $return_message = $self->map_state($extracted_message);
-#             if ( $self->can_map_topic($topic) ) {
-#                 my @return_pairs = map { [ $_ => $return_message ] }
-#                     $self->map_topic($topic)->@*;
-#                 return \@return_pairs;
-#             }
-#             else {
-#                 $log->errorf( 'cannot map topic %s', $topic );
-#             }
-#         }
-#         else {
-#             $log->errorf( 'cannot map state %s', $extracted_message );
-#         }
-#     }
-#     else {
-#         $log->errorf( 'cannot extract state from %s', $message );
-#     }
-#     return;
-# }
-
-# sub extract_message {
-#     my ($self, $message) = @_;
-#     return $message;
-# }
-
-
-
-
-
 
 42;
 

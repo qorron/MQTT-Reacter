@@ -10,12 +10,11 @@ use Data::Dumper;
 use Moose;
 
 use Log::Any qw($log);
-use JSON;
 use namespace::autoclean;
 
 with 'Net::MQTT::Reacter::Roles::Json';
 
-has 'retention',
+has 'retain',
 	is      => 'rw',
 	isa     => 'Bool',
 	default => 0,

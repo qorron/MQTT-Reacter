@@ -14,7 +14,8 @@ use Net::MQTT::Reacter::Reaction;
 
 use namespace::autoclean;
 
-with 'Net::MQTT::Reacter::Roles::Basic', 'Net::MQTT::Reacter::Roles::Counter', 'Net::MQTT::Reacter::Roles::Json';
+with 'Net::MQTT::Reacter::Roles::ExtractAction', 'Net::MQTT::Reacter::Roles::Counter',
+;
 
 
 
@@ -63,13 +64,6 @@ has '+single_counter_mapping', default => sub {
 	];
 	},
 ;
-
-
-sub extract_message {
-    my ($self, $message) = @_;
-    my $json_data = $self->j->decode($message);
-    return $json_data->{action};
-}
 
 43;
 
