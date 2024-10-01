@@ -24,7 +24,7 @@ my %reactions ;
 for my $reactor ($r->reactions->@*) {
 	for my $topic ( $reactor->subscribe_topic->@* ) {
 		$reactions{$topic} = sub {
-			say join ' => ', @_;
+			say sprintf( 'Reactor for %s is a %s Message: %s', $_[0], ref($reactor), $_[1] );
 			my $reactions = $reactor->react(@_);
 			if ( $reactions && ref $reactions eq 'ARRAY' && $reactions->@* ) {
 				for my $reaction ( $reactions->@* ) {

@@ -27,6 +27,7 @@ has 'multi_mapping',
 sub react {
     my ( $self, $topic, $message ) = @_;
     my $extracted_message = $self->extract_message($message);
+	$log->infof( 'Got %s -> %s message: %s', $topic, $message, $extracted_message, );
     if ($extracted_message) {
         if ( $self->can_map_topic($topic) ) {
             my $topic_tree = $self->map_topic($topic);
@@ -39,6 +40,7 @@ sub react {
                         data  => $_->[1]
                     )
                 } $topic_tree->{$extracted_message}->@*;
+				$log->infof('Mapping %s to %s messages',$extracted_message, scalar(@return_pairs));
                 return \@return_pairs;
             }
             else {
@@ -50,7 +52,7 @@ sub react {
         }
     }
     else {
-        $log->errorf( 'cannot extract state from %s', $message );
+        $log->errorf( 'cannot extract action from %s', $message );
     }
     return;
 }
