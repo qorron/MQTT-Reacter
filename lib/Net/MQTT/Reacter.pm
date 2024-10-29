@@ -5,7 +5,7 @@ package Net::MQTT::Reacter;
 use 5.024;
 use strict;
 use warnings;
-use Data::Dumper;
+use DDP;
 
 use Moose;
 
