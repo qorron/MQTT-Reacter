@@ -4,27 +4,27 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-#use Net::Pushover;
 use Net::MQTT::Simple;
 use Log::Any::Adapter ('Stderr');
+use Getopt::Long;
 
 # use lib qw( lib lib_private_examples /usr/local/lib/home_automation/perl );
-# use config;
+
 use Net::MQTT::Reacter;
 use Net::MQTT::Reacter::Reaction;
 
 
-use Getopt::Long;
-my $reaction_namespace   = 'Net::MQTT::Reacter::MyReactions';
-my $mqtt_host='127.0.0.1';
+my $reaction_namespace = 'Net::MQTT::Reacter::MyReactions';
+my $mqtt_host          = '127.0.0.1';
 my $verbose;
-GetOptions ("namespace=s" => \$reaction_namespace, 
-            "host=s"   => \$mqtt_host,      # string
-            "verbose"  => \$verbose)   # flag
-or die("Error in command line arguments\n");
+GetOptions(
+    "namespace=s" => \$reaction_namespace,
+    "host=s"      => \$mqtt_host,            # string
+    "verbose"     => \$verbose
+  )                                          # flag
+  or die("Error in command line arguments\n");
 
-
-	my $mqtt = Net::MQTT::Simple->new( $mqtt_host );
+my $mqtt = Net::MQTT::Simple->new( $mqtt_host );
 
 my $r = Net::MQTT::Reacter->new(reaction_namespace => $reaction_namespace);
 say join "\n", "Loading Plugins:", map {ref} $r->reactions->@*;
