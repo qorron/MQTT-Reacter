@@ -32,6 +32,9 @@ has 'subscribe_topic',
 
 requires 'react';
 
+sub can_run {
+	return 1;
+}
 
 sub react_in_a_safe_way {
     my ($self, $topic, $message ) = @_;
@@ -44,13 +47,6 @@ sub react_in_a_safe_way {
     }
     return @return;
 }   
-
-
-
-sub extract_message {
-    my ($self, $message) = @_;
-    return $message;
-}
 
 42;
 

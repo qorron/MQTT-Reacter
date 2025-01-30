@@ -5,7 +5,7 @@ package Net::MQTT::Reacter::Roles::HostFilter;
 use 5.024;
 use strict;
 use warnings;
-use Data::Dumper;
+use DDP;
 
 use Sys::Hostname;
 use Log::Any qw($log);

@@ -29,23 +29,33 @@ my $mqtt = Net::MQTT::Simple->new( $mqtt_host );
 my $r = Net::MQTT::Reacter->new(reaction_namespace => $reaction_namespace);
 say join "\n", "Loading Plugins:", map {ref} $r->reactions->@*;
 my %reactions ;
-for my $reactor ($r->reactions->@*) {
-	for my $topic ( $reactor->subscribe_topic->@* ) {
-		$reactions{$topic} = sub {
-			say sprintf( 'Reactor for %s is a %s Message: %s', $_[0], ref($reactor), $_[1] );
-			my $reactions = $reactor->react(@_);
-			if ( $reactions && ref $reactions eq 'ARRAY' && $reactions->@* ) {
-				for my $reaction ( $reactions->@* ) {
-					if ( $reaction->retain ) {
-						$mqtt->retain( $reaction->topic, $reaction->message );
-					}
-					else {
-						$mqtt->publish( $reaction->topic, $reaction->message );
-					}
-				}
-			}
-		}
-	}
+for my $reactor ( $r->reactions->@* ) {
+    if ( $reactor->can_run ) {
+        say sprintf( 'Loading %s because it can run.', ref($reactor) );
+        for my $topic ( $reactor->subscribe_topic->@* ) {
+            $reactions{$topic} = sub {
+                say sprintf( 'Reactor for %s is a %s Message: %s',
+                    $_[0], ref($reactor), $_[1] );
+                my $reactions = $reactor->react(@_);
+                if ( $reactions && ref $reactions eq 'ARRAY' && $reactions->@* )
+                {
+                    for my $reaction ( $reactions->@* ) {
+                        if ( $reaction->retain ) {
+                            $mqtt->retain( $reaction->topic,
+                                $reaction->message );
+                        }
+                        else {
+                            $mqtt->publish( $reaction->topic,
+                                $reaction->message );
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else {
+        say sprintf( 'Not loading %s because it can not run.', ref($reactor) );
+    }
 }
 
 die "no reactors" unless keys %reactions;
