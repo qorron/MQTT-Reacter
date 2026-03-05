@@ -17,10 +17,10 @@ use namespace::autoclean;
 
 
 has 'subscribe_topic',
-    is      => 'ro',
-    isa     => 'ArrayRef[Str]',
-    default => sub { ['#'] },
-    ;
+  is       => 'ro',
+  isa      => 'ArrayRef[Str]',
+  required => 1,
+  ;
 
 # has 'payload',
 #     is      => 'rw',
