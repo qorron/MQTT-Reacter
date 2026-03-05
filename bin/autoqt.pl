@@ -15,7 +15,7 @@ use Net::MQTT::Reacter::Reaction;
 
 
 my $reaction_namespace = 'Net::MQTT::Reacter::MyReactions';
-my $mqtt_host          = '127.0.0.1';
+my $mqtt_host          = $ENV{MQTT_HOST} // '127.0.0.1';
 my $verbose;
 GetOptions(
     "namespace=s" => \$reaction_namespace,

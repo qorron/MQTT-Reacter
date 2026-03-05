@@ -12,7 +12,7 @@ use Moose::Role;
 
 use namespace::autoclean;
 
-with 'Net::MQTT::Reacter::Roles::Basic', 'Net::MQTT::Reacter::Roles::Json';
+with 'Net::MQTT::Reacter::Roles::Json';
 
 sub extract_message {
     my ($self, $message) = @_;
