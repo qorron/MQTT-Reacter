@@ -13,23 +13,25 @@ use Getopt::Long;
 use Net::MQTT::Reacter;
 use Net::MQTT::Reacter::Reaction;
 
-
 my $reaction_namespace = 'Net::MQTT::Reacter::MyReactions';
 my $mqtt_host          = $ENV{MQTT_HOST} // '127.0.0.1';
 my $verbose;
+my $filter;
 GetOptions(
     "namespace=s" => \$reaction_namespace,
     "host=s"      => \$mqtt_host,            # string
-    "verbose"     => \$verbose
+    "verbose"     => \$verbose,
+    "filter=s"    => \$filter,
   )                                          # flag
   or die("Error in command line arguments\n");
 
-my $mqtt = Net::MQTT::Simple->new( $mqtt_host );
+my $mqtt = Net::MQTT::Simple->new($mqtt_host);
 
-my $r = Net::MQTT::Reacter->new(reaction_namespace => $reaction_namespace);
-say join "\n", "Loading Plugins:", map {ref} $r->reactions->@*;
-my %reactions ;
+my $r = Net::MQTT::Reacter->new( reaction_namespace => $reaction_namespace );
+say join "\n", "Loading Plugins:", map { ref } $r->reactions->@*;
+my %reactions;
 for my $reactor ( $r->reactions->@* ) {
+    next if $filter && $filter ne ref $reactor;
     if ( $reactor->can_run ) {
         say sprintf( 'Loading %s because it can run.', ref($reactor) );
         for my $topic ( $reactor->subscribe_topic->@* ) {
@@ -63,5 +65,4 @@ say join "\n", "Subscribing to:", sort keys %reactions;
 
 $mqtt->subscribe(%reactions);
 $mqtt->run();
-
 
