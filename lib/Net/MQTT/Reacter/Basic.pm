@@ -42,12 +42,12 @@ sub react_in_a_safe_way {
     my @return;
     eval {
         @return = $self->react($topic, $message );
-    };  
+    };
     if ($@ )  {
 		$log->errorf( 'failed topic: %s\nmsg: >>%s<<\nError: %s', $topic, $message, $@ );
     }
     return @return;
-}   
+}
 
 42;
 
